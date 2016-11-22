@@ -1,6 +1,8 @@
 function bounce {
 	Param(
-		[String]$Push
+		[String]$Push,
+		[Switch]$Delete = $False,
+		[String]$Filemask = "| *swp; *swo; *~"
 	)
 
 	#don't discriminate between PS natives and git natives
@@ -41,7 +43,7 @@ function bounce {
 	"lcd $(pwd)",
 	"cd $Dir",
 	"echo $Style",
-	"sync $Type -filemask=`"| *swp; *swo; *~`" .\ ./",
+	"sync $Type $(if($Delete) { "-delete" }) -filemask=`"$($Filemask)`" .\ ./",
 	"exit" -join "`n" | Out-File ".\bounce.scp~"
 
 	#sync it
