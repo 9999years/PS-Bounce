@@ -15,9 +15,10 @@ function bounce {
 	#"push" or "up"
 	#otherwise "pull"/"down" is implicit
 	If(
-		$Push.StartsWith("pus") -or
-		$Push.StartsWith("u") -or
-		$Push.StartsWith("↑")
+		$Push.StartsWith("pus") -or #"push"
+		$Push.StartsWith("u") -or #"up"
+		$Push.StartsWith("↑") -or
+		$Push.StartsWith("r") #"remote"
 	) {
 		$Type = "remote"
 		$Style = "Pushing local files to remote directory."
@@ -40,7 +41,7 @@ function bounce {
 	"lcd $(pwd)",
 	"cd $Dir",
 	"echo $Style",
-	"sync $Type -delete -filemask=`"| *swp; *swo; *~`" .\ ./",
+	"sync $Type -filemask=`"| *swp; *swo; *~`" .\ ./",
 	"exit" -join "`n" | Out-File ".\bounce.scp~"
 
 	#sync it
