@@ -40,7 +40,7 @@ function bounce {
 	New-Item ".\bounce.scp~" | Out-Null
 
 	"open sftp://user@becca.ooo/ -hostkey=`"$Key`"",
-	"lcd $(pwd)",
+	"lcd `"$(pwd)`"",
 	"cd $Dir",
 	"echo $Style",
 	"sync $Type $(if($Delete) { "-delete" }) -filemask=`"$($Filemask)`" .\ ./",
