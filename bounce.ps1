@@ -39,6 +39,8 @@ function bounce {
 	#create a temp file but be quiet about it
 	New-Item ".\bounce.scp~" | Out-Null
 
+	#open session, cd to proper directories, sync files, exit
+	"option batch off",
 	"open sftp://user@becca.ooo/ -hostkey=`"$Key`"",
 	"lcd `"$(pwd)`"",
 	"cd $Dir",
