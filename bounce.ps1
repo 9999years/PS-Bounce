@@ -2,7 +2,9 @@ function bounce {
 	Param(
 		[String]$Push,
 		[Switch]$Delete = $False,
-		[String]$Filemask = "| *swp; *swo; *~"
+		[String]$Filemask = "| *swp; *swo; *~",
+		[String]$User = "user",
+		[String]$Site = "becca.ooo"
 	)
 
 	#don't discriminate between PS natives and git natives
@@ -33,15 +35,32 @@ function bounce {
 	#first line is the remote directory, second is the key
 	#all other lines are ignored
 	$bf = Get-Content ".\bounce.dir"
-	$Dir = $bf[0]
-	$Key = $bf[1]
+
+	$Dir = ""
+	$Key = ""
+	$Include = ""
+	$Exclude = ""
+
+	#load up the configuration
+	$bf | ForEach {
+		$Prefix = $_.Substring(0, $_.IndexOf(": ")).Trim()
+		$Line = $_.Substring($_.IndexOf(": ") + 2).Trim()
+		Switch($Prefix) {
+			"INCLUDE" { $Include = $Line }
+			"EXCLUDE" { $Exclude = $Line }
+			"KEY"     { $Key = $Line }
+			"PATH"    { $Dir = $Line }
+		}
+	}
+
+	$Filemask = "$Include | $Exclude"
 
 	#create a temp file but be quiet about it
 	New-Item ".\bounce.scp~" | Out-Null
 
 	#open session, cd to proper directories, sync files, exit
 	"option batch off",
-	"open sftp://user@becca.ooo/ -hostkey=`"$Key`"",
+	"open sftp://$User@$Site/ -hostkey=`"$Key`"",
 	"lcd `"$(pwd)`"",
 	"cd $Dir",
 	"echo $Style",
