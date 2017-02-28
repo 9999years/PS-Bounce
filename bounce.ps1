@@ -43,8 +43,13 @@ function bounce {
 
 	#load up the configuration
 	$bf | ForEach {
-		$Prefix = $_.Substring(0, $_.IndexOf(": ")).Trim()
-		$Line = $_.Substring($_.IndexOf(": ") + 2).Trim()
+		If($_ -match "^\w+: ?$") {
+			$Prefix = $_.Substring(0, $_.IndexOf(":"))
+			$Line = ""
+		} Else {
+			$Prefix = $_.Substring(0, $_.IndexOf(": ")).Trim()
+			$Line = $_.Substring($_.IndexOf(": ") + 2).Trim()
+		}
 		Switch($Prefix) {
 			"INCLUDE" { $Include = $Line }
 			"EXCLUDE" { $Exclude = $Line }
@@ -56,7 +61,10 @@ function bounce {
 	$Filemask = "$Include | $Exclude"
 
 	#create a temp file but be quiet about it
-	New-Item ".\bounce.scp~" | Out-Null
+	If(Test-Path ".\bounce.dir~") {
+		Write-Output "Overwriting existing temp file; Previous run of Bounce probably failed"
+	}
+	New-Item ".\bounce.scp~" -Force | Out-Null
 
 	#open session, cd to proper directories, sync files, exit
 	"option batch off",
