@@ -38,7 +38,8 @@ function bounce {
 		[Switch]$Delete = $False,
 		[String]$Filemask = "| *swp; *swo; *~",
 		[String]$User = "user",
-		[String]$Site = "becca.ooo"
+		[String]$Site = "becca.ooo",
+		[Switch]$KeepTemp
 	)
 
 	function diffcmd {
@@ -91,6 +92,7 @@ function bounce {
 		If(!(Test-Path bounce.dir)) {
 			"PATH: /home/user/fullremotepath/
 			KEY: ssh-rsa 2048 xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx
+			PRIVATEKEY: ~/.ssh/id_rsa.ppk
 			INCLUDE:
 			EXCLUDE: *swp; *swo; *~" |
 			Out-File bounce.dir -Encoding UTF8
@@ -104,10 +106,11 @@ function bounce {
 	#all other lines are ignored
 	$bf = Get-Content ".\bounce.dir"
 
-	$Dir = ""
-	$Key = ""
-	$Include = ""
-	$Exclude = ""
+	$Dir        = ""
+	$PrivateKey = ""
+	$Key        = ""
+	$Include    = ""
+	$Exclude    = ""
 
 	#load up the configuration
 	$bf | ForEach {
@@ -119,10 +122,11 @@ function bounce {
 			$Line = $_.Substring($_.IndexOf(": ") + 2).Trim()
 		}
 		Switch($Prefix) {
-			"INCLUDE" { $Include = $Line }
-			"EXCLUDE" { $Exclude = $Line }
-			"KEY"     { $Key = $Line }
-			"PATH"    { $Dir = $Line }
+			"INCLUDE"    { $Include    =              $Line }
+			"EXCLUDE"    { $Exclude    =              $Line }
+			"HOSTKEY"    { $Key        =              $Line }
+			"PATH"       { $Dir        =              $Line }
+			"PRIVATEKEY" { $PrivateKey = Resolve-Path $Line }
 		}
 	}
 
@@ -136,18 +140,21 @@ function bounce {
 
 	#open session, cd to proper directories, sync files, exit
 	"option batch off",
-	"open sftp://$User@$Site/ -hostkey=`"$Key`"",
+	"open sftp://$User@$Site/ -hostkey=`"$Key`" $(If($PrivateKey) {
+		" -privatekey=`""$PrivateKey"`"" })",
 	"lcd `"$(pwd)`"",
 	"cd $Dir",
 	"echo $Style",
-	"sync $Type $(if($Delete) { "-delete" }) -filemask=`"$($Filemask)`" .\ ./",
+	"sync $Type $(If($Delete) { "-delete " })-filemask=`"$($Filemask)`" .\ ./",
 	"exit" -join "`n" | Out-File ".\bounce.scp~"
 
 	#sync it
-	winscp /ini=nul /script=".\bounce.scp~"
+	winscp.com /ini=nul /script=".\bounce.scp~"
 
 	#get rid of the temp file
-	Remove-Item ".\bounce.scp~"
+	If(!$KeepTemp) {
+		Remove-Item ".\bounce.scp~"
+	}
 
 	#update tree archive
 	Get-BounceTree | Out-File ".tree-cache" -Encoding UTF8
