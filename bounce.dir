@@ -1,0 +1,5 @@
+﻿PATH: /home/user/fullremotepath/
+KEY: *
+PRIVATEKEY: ~/.ssh/id_rsa.ppk
+INCLUDE:
+EXCLUDE: *swp; *swo; *~
