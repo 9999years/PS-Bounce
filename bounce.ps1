@@ -35,6 +35,7 @@ function bounce {
 	[CmdletBinding()]
 	Param(
 		[String]$Push,
+		[String]$BounceFile = ".\bounce.dir",
 		[Switch]$Delete = $False,
 		[Switch]$KeepTemp
 	)
@@ -96,7 +97,7 @@ function bounce {
 		diffcmd ".tree-cache" ".tree-cache-new"
 		return
 	} ElseIf($Push.StartsWith("i")) { #init
-		If(!(Test-Path bounce.dir)) {
+		If(!(Test-Path $BounceFile)) {
 			"USER: user",
 			"SITE: example.com",
 			"PROTOCOL: $Protocol",
@@ -105,26 +106,31 @@ function bounce {
 			"PRIVATEKEY: $PrivateKey",
 			"INCLUDE:",
 			"EXCLUDE: $Exclude" -join "`n" |
-			Out-File bounce.dir -Encoding UTF8
+			Out-File $BounceFile -Encoding UTF8
 		}
 		Get-BounceTree | Out-File ".tree-cache" -Encoding UTF8
 		return
 	}
 
 	# get the bounce file
-	$bf = Get-Content ".\bounce.dir"
+	$bf = Get-Content $BounceFile
 
 	#load up the configuration
 	$bf | ForEach {
 		$inx = $_.IndexOf(": ")
-		If($_ -match "^\w+: ?$") {
-			$Prefix = $_.Substring(0, $inx)
-			$Line = ""
-		} Else {
-			$Prefix = $_.Substring(0, $inx).Trim()
-			$Line = $_.Substring($inx + 2).Trim()
+		# don't fuck with lines w/o a ": "
+		If($inx -gt 0) {
+			If($_ -match "^\w+: ?$") {
+				$Prefix = $_.Substring(0, $inx)
+				$Line = ""
+			} Else {
+				$Prefix = $_.Substring(0, $inx).Trim()
+				$Line = $_.Substring($inx + 2).Trim()
+			}
 		}
+
 		Switch($Prefix) {
+			# Tab /[{}=]
 
 			"INCLUDE"    { $Include    = $Line              }
 			"EXCLUDE"    { $Exclude    = $Line              }
@@ -140,7 +146,7 @@ function bounce {
 
 	$Filemask = "$Include | $Exclude"
 
-	If(Test-Path ".\bounce.dir~") {
+	If(Test-Path "$BounceFile~") {
 		Write-Output "Overwriting existing temp file; Previous run of Bounce probably failed"
 	}
 	# create a temp file but be quiet about it
