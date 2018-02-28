@@ -117,12 +117,14 @@ function bounce {
 	#load up the configuration
 	$bf | ForEach {
 		$inx = $_.IndexOf(": ")
-		If($_ -match "^\w+: ?$") {
-			$Prefix = $_.Substring(0, $inx)
-			$Line = ""
-		} Else {
-			$Prefix = $_.Substring(0, $inx).Trim()
-			$Line = $_.Substring($inx + 2).Trim()
+		If($inx -gt 0) {
+			If($_ -match "^\w+: ?$") {
+				$Prefix = $_.Substring(0, $inx)
+				$Line = ""
+			} Else {
+				$Prefix = $_.Substring(0, $inx).Trim()
+				$Line = $_.Substring($inx + 2).Trim()
+			}
 		}
 		Switch($Prefix) {
 
