@@ -31,7 +31,7 @@ function Get-RemoteBounceTree {
 		)
 }
 
-function bounce {
+function Send-Bounce {
 	[CmdletBinding()]
 	Param(
 		[String]$Push,
@@ -173,3 +173,5 @@ function bounce {
 	# update tree archive
 	Get-BounceTree | Out-File ".tree-cache" -Encoding UTF8
 }
+
+New-Alias bounce Send-Bounce
