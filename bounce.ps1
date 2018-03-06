@@ -174,4 +174,4 @@ function Send-Bounce {
 	Get-BounceTree | Out-File ".tree-cache" -Encoding UTF8
 }
 
-New-Alias bounce Send-Bounce
+New-Alias bounce Send-Bounce -ErrorAction SilentlyContinue
