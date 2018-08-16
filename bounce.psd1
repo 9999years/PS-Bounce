@@ -1,24 +1,18 @@
-﻿@{
-# Script module or binary module file associated with this manifest.
-# RootModule = ''
-
+@{
 # Version number of this module.
 ModuleVersion = '1.0'
 
-# Supported PSEditions
-# CompatiblePSEditions = @()
-
 # ID used to uniquely identify this module
-GUID = '6f2a3cf3-f163-4f75-aa67-f92d3315ca59'
+GUID = 'cad17f61-5542-4e5c-a94a-486060288091'
 
 # Author of this module
 Author = 'Rebecca Turner'
 
 # Company or vendor of this module
-CompanyName = 'N/A'
+#CompanyName = 'Unknown'
 
 # Copyright statement for this module
-Copyright = '(c) 2018 aquatica. MIT licensed.'
+Copyright = 'MIT because you can do better than this'
 
 # Description of the functionality provided by this module
 # Description = ''
@@ -48,7 +42,7 @@ Copyright = '(c) 2018 aquatica. MIT licensed.'
 # RequiredAssemblies = @()
 
 # Script files (.ps1) that are run in the caller's environment prior to importing this module.
- ScriptsToProcess = @('bounce.ps1')
+ScriptsToProcess = @("bounce.ps1")
 
 # Type files (.ps1xml) to be loaded when importing this module
 # TypesToProcess = @()
@@ -60,16 +54,16 @@ Copyright = '(c) 2018 aquatica. MIT licensed.'
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = @('teximg')
+FunctionsToExport = @()
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
-CmdletsToExport = @()
+CmdletsToExport = @("Send-Bounce")
 
 # Variables to export from this module
-VariablesToExport = @()
+VariablesToExport = @{}
 
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-AliasesToExport = @()
+AliasesToExport = @("bounce")
 
 # DSC resources to export from this module
 # DscResourcesToExport = @()
@@ -109,4 +103,5 @@ PrivateData = @{
 
 # Default prefix for commands exported from this module. Override the default prefix using Import-Module -Prefix.
 # DefaultCommandPrefix = ''
+
 }
